@@ -189,15 +189,13 @@ func main() {
 	done := make(chan bool)
 	go processCSV(f, *numWorkers, results, done)
 
+	// Values are in microseconds
 	var queryTimes []int64
 
-	// Values are in microseconds
-	firstResult := <-results
-	queryTimes = append(queryTimes, firstResult.queryTime)
-	minQueryTime := firstResult.queryTime
-	maxQueryTime := firstResult.queryTime
-	medianQueryTime := firstResult.queryTime
-	totalQueryTime := firstResult.queryTime
+	var totalQueryTime int64
+	var minQueryTime int64
+	var maxQueryTime int64
+	var medianQueryTime int64
 
 out:
 	for {
@@ -205,15 +203,16 @@ out:
 		case r := <-results:
 			queryTimes = append(queryTimes, r.queryTime)
 			totalQueryTime += r.queryTime
-			if r.queryTime < minQueryTime {
-				minQueryTime = r.queryTime
-			} else if r.queryTime > maxQueryTime {
-				maxQueryTime = r.queryTime
-			}
 		case _ = <-done:
 			log.Print("[INFO] Gathered all results\n")
 			break out
 		}
+	}
+
+	n := len(queryTimes)
+	if n == 0 {
+		log.Printf("[INFO] No queries provided. Exiting\n")
+		return
 	}
 
 	// Accumulating all results and then sorting is not
@@ -222,12 +221,14 @@ out:
 	sort.Slice(queryTimes, func(i, j int) bool {
 		return queryTimes[i] < queryTimes[j]
 	})
-	n := len(queryTimes)
 	if n%2 == 0 {
 		medianQueryTime = (queryTimes[n/2-1] + queryTimes[n/2]) / 2
 	} else {
 		medianQueryTime = queryTimes[n/2]
 	}
+
+	minQueryTime = queryTimes[0]
+	maxQueryTime = queryTimes[n-1]
 
 	fmt.Printf("\n###########################\n")
 	fmt.Printf("Number of queries: %d\n", len(queryTimes))
