@@ -232,9 +232,9 @@ out:
 
 	fmt.Printf("\n###########################\n")
 	fmt.Printf("Number of queries: %d\n", len(queryTimes))
-	fmt.Printf("Total query time:  %dms\n", totalQueryTime/1000)
-	fmt.Printf("Min query time:    %dms\n", minQueryTime/1000)
-	fmt.Printf("Max query time:    %dms\n", maxQueryTime/1000)
-	fmt.Printf("Mean query time:   %dms\n", totalQueryTime/int64(len(queryTimes))/1000)
-	fmt.Printf("Median query time: %dms\n", medianQueryTime/1000)
+	fmt.Printf("Total query time:  %.3fms\n", float32(totalQueryTime)/1000.0)
+	fmt.Printf("Min query time:    %.3fms\n", float32(minQueryTime)/1000.0)
+	fmt.Printf("Max query time:    %.3fms\n", float32(maxQueryTime)/1000.0)
+	fmt.Printf("Mean query time:   %.3fms\n", float32(totalQueryTime)/1000.0/float32(len(queryTimes)))
+	fmt.Printf("Median query time: %.3fms\n", float32(medianQueryTime)/1000.0)
 }
