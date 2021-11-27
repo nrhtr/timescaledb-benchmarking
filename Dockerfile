@@ -12,5 +12,4 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -o bench .
 
 FROM alpine:3.15.0
 COPY --from=builder /build/bench .
-ADD entrypoint.sh .
 CMD ["./bench"]  
